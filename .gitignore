@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+data/outbox/*
+!data/outbox/.gitkeep
+data/test_outbox/
+.venv/
+venv/
+*.egg-info/
+.DS_Store
+# starter archive and its extracted copy (fixtures live in apps/insurance_claims/fixtures)
+starter/
+*.zip

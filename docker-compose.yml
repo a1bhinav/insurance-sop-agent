@@ -1,0 +1,26 @@
+services:
+  sop-agent:
+    build: .
+    image: insurance-sop-agent:latest
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      # --- model access (pick one provider; the key can also be typed into the UI) ---
+      LLM_PROVIDER: ${LLM_PROVIDER:-anthropic}      # anthropic | openai | mock
+      LLM_API_KEY: ${LLM_API_KEY:-}                 # or ANTHROPIC_API_KEY / OPENAI_API_KEY
+      LLM_MODEL: ${LLM_MODEL:-}                     # default: claude-sonnet-5-5 (anthropic) / gpt-4o (openai)
+      LLM_EXTRACTOR_MODEL: ${LLM_EXTRACTOR_MODEL:-} # optional cheaper model for extraction, e.g. claude-haiku-5-5
+      LLM_BASE_URL: ${LLM_BASE_URL:-}               # optional: OpenAI-compatible endpoint / proxy
+      ALLOW_CLIENT_API_KEY: ${ALLOW_CLIENT_API_KEY:-true}
+      # --- SOP thresholds ---
+      SOP_MIN_PII_FACTORS: ${SOP_MIN_PII_FACTORS:-3}
+      SOP_MAX_VERIFY_ATTEMPTS: ${SOP_MAX_VERIFY_ATTEMPTS:-3}
+      SOP_OFF_TOPIC_LIMIT: ${SOP_OFF_TOPIC_LIMIT:-3}
+      SOP_REFUSAL_LIMIT: ${SOP_REFUSAL_LIMIT:-3}
+      SOP_CONSENT_MAX_CHECKS: ${SOP_CONSENT_MAX_CHECKS:-4}
+      SOP_DEMO_DATE: ${SOP_DEMO_DATE:-2026-02-10}   # keeps the fixture deadlines in the future; unset for real today
+      COMPANY_NAME: ${COMPANY_NAME:-Harbor Mutual Insurance}
+      AGENT_NAME: ${AGENT_NAME:-Sam}
+    volumes:
+      - ./data/outbox:/app/data/outbox
+    restart: unless-stopped

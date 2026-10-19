@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claims SOP Agent — test console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ui/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1>Claims SOP Agent</h1>
+        <p class="brand-sub">Test console · identity verification → intent → case → follow-up</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <label class="field">
+        <span>Model provider</span>
+        <select id="provider">
+          <option value="">server default</option>
+          <option value="anthropic">Anthropic</option>
+          <option value="openai">OpenAI-compatible</option>
+          <option value="mock">Mock (no model)</option>
+        </select>
+      </label>
+      <label class="field key-field">
+        <span>Model API key</span>
+        <input id="apiKey" type="password" placeholder="sk-… (kept in this tab only)" autocomplete="off">
+      </label>
+      <label class="field">
+        <span>Model</span>
+        <input id="model" type="text" placeholder="default">
+      </label>
+      <label class="field">
+        <span>Consent scenario</span>
+        <select id="consentScenario"></select>
+      </label>
+      <button id="newSession" class="btn primary" type="button">Start new conversation</button>
+    </div>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <main class="layout">
+    <!-- ------------------------------------------------------------ chat -->
+    <section class="chat" aria-label="Conversation">
+      <div class="chat-head">
+        <div class="llm-pill" id="llmPill">connecting…</div>
+        <div class="sample">
+          <label class="field compact">
+            <span>Sample caller</span>
+            <select id="scenario"><option value="">choose a script…</option></select>
+          </label>
+          <button id="nextLine" class="btn" type="button" disabled>Send next line</button>
+          <button id="runAll" class="btn" type="button" disabled>Run all</button>
+        </div>
+      </div>
+      <p class="scenario-desc" id="scenarioDesc"></p>
+
+      <div class="transcript" id="transcript" role="log" aria-live="polite"></div>
+
+      <form class="composer" id="composer">
+        <textarea id="input" rows="2" placeholder="Type as the caller… (Enter to send, Shift+Enter for a new line)"></textarea>
+        <button class="btn primary" id="send" type="submit">Send</button>
+      </form>
+    </section>
+
+    <!-- ------------------------------------------------------- inspector -->
+    <aside class="inspector" aria-label="SOP inspector">
+      <div class="inspector-head">
+        <h2>What the SOP is doing</h2>
+        <span class="turns" id="turnCount"></span>
+      </div>
+
+      <ol class="phase-rail" id="phaseRail">
+        <li data-phase="VERIFY_ID"><span class="ph-name">Verify identity</span><span class="ph-dial strict">strict</span></li>
+        <li data-phase="RESOLVE_INTENT"><span class="ph-name">Resolve intent</span><span class="ph-dial guided">guided</span></li>
+        <li data-phase="PROCESS_CASE"><span class="ph-name">Process case</span><span class="ph-dial flexible">flexible</span></li>
+        <li data-phase="POST_PROCESS"><span class="ph-name">Follow-up</span><span class="ph-dial guided">guided</span></li>
+      </ol>
+      <div class="terminal-note" id="terminalNote" hidden></div>
+
+      <section class="panel" id="gatePanel">
+        <h3>Identity gate</h3>
+        <div class="factors" id="factors"></div>
+        <ul class="fieldlist" id="fieldList"></ul>
+        <p class="meta" id="gateMeta"></p>
+      </section>
+
+      <section class="panel">
+        <h3>Remembered across phases</h3>
+        <div id="memory" class="memory"></div>
+      </section>
+
+      <section class="panel">
+        <h3>Case</h3>
+        <div id="casePanel" class="case"></div>
+      </section>
+
+      <section class="panel">
+        <h3>Signals</h3>
+        <dl class="signals" id="signals"></dl>
+      </section>
+
+      <section class="panel">
+        <h3>Guard & gate log</h3>
+        <ol class="eventlog" id="eventLog"></ol>
+      </section>
+
+      <section class="panel" id="emailPanel" hidden>
+        <h3>Email summary sent</h3>
+        <div id="emails"></div>
+      </section>
+
+      <details class="panel raw">
+        <summary>Raw extraction for the last turn</summary>
+        <pre id="rawSignals"></pre>
+      </details>
+    </aside>
+  </main>
+
+  <script src="/ui/app.js"></script>
+</body>
+</html>
